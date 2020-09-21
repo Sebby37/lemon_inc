@@ -4,7 +4,7 @@ import random
 pygame.init()
 pygame.font.init()
 window = pygame.display.set_mode((450, 450))
-pygame.display.set_caption("Lemon Clicker v0.20a") #Alpha 0.20
+pygame.display.set_caption("Lemon Clicker v0.21a") #Alpha 0.20
 clock = pygame.time.Clock()
 timer = 0
 wait_time = 0
@@ -37,7 +37,7 @@ def disp_lemon(window):
     lemon = lemon_img
     mouse_pos = pygame.mouse.get_pos()
     if mouse_pos[0] > 25 and mouse_pos[0] < 425 and mouse_pos[1] > 75 and mouse_pos[1] < 375 and pygame.mouse.get_pressed()[0] == True:
-        print(f"Lemon Clicked!!!! Score = {PLAYERSCORE}")
+        print(f"Lemon Clicked!!!! Score = {PLAYERSCORE + 1}")
         PLAYERSCORE += 1
         lemon_resized = pygame.transform.scale(lemon, (300, 200))
         window.blit(lemon_resized, (75, 135))
