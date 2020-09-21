@@ -1,9 +1,19 @@
 import pygame
 import os
+import random
 pygame.init()
 pygame.font.init()
 window = pygame.display.set_mode((450, 450))
-pygame.display.set_caption("Lemon Clicker v0.01")
+pygame.display.set_caption("Lemon Clicker v0.20a") #Alpha 0.20
+clock = pygame.time.Clock()
+timer = 0
+wait_time = 0
+waiting = False
+
+lemon_img = pygame.image.load("lemon.png").convert_alpha()
+
+def ra():
+    return random.randint(0, 450)
 
 #Gets player score
 if not os.path.exists("save_data.lemon"):
@@ -22,31 +32,76 @@ def disp_text(window, text):
 
 def disp_lemon(window):
     global PLAYERSCORE
-    lemon = pygame.image.load("lemon.png")
+    global lemon_img
+    global timer
+    lemon = lemon_img
     mouse_pos = pygame.mouse.get_pos()
     if mouse_pos[0] > 25 and mouse_pos[0] < 425 and mouse_pos[1] > 75 and mouse_pos[1] < 375 and pygame.mouse.get_pressed()[0] == True:
-        print("Lemon Clicked!!!!")
+        print(f"Lemon Clicked!!!! Score = {PLAYERSCORE}")
         PLAYERSCORE += 1
         lemon_resized = pygame.transform.scale(lemon, (300, 200))
         window.blit(lemon_resized, (75, 135))
+        return True
     else:
         lemon_resized = pygame.transform.scale(lemon, (400, 300))
         window.blit(lemon_resized, (25, 75))
+        return False
 
-clock = pygame.time.Clock()
-while True:
+def disp_fake_lemon(window):
+    global lemon_img
+    lemon_resized = pygame.transform.scale(lemon_img, (300, 200))
+    window.blit(lemon_resized, (75, 135))
+
+# window.blit(pygame.transform.scale(pygame.image.load("lemon.png"), (x_scale, y_scale)), (x_pos, y_pos))
+fast_lemons = {"L0":[ra(), 0], "L1":[ra(), 0], "L2":[ra(), 0], "L3":[ra(), 0], "L4":[ra(), 0], "L5":[ra(), 0], "L6":[ra(), 0], "L7":[ra(), 0], "L8":[ra(), 0], "L9":[ra(), 0]}
+medium_lemons = {"L0":[ra(), 0], "L1":[ra(), 0], "L2":[ra(), 0], "L3":[ra(), 0], "L4":[ra(), 0], "L5":[ra(), 0], "L6":[ra(), 0], "L7":[ra(), 0], "L8":[ra(), 0], "L9":[ra(), 0]}
+slow_lemons = {"L0":[ra(), 0], "L1":[ra(), 0], "L2":[ra(), 0], "L3":[ra(), 0], "L4":[ra(), 0], "L5":[ra(), 0], "L6":[ra(), 0], "L7":[ra(), 0], "L8":[ra(), 0], "L9":[ra(), 0]}
+running = True
+while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            with open("save_data.lemon", "w") as savedata:
-                savedata.truncate(0)
-                savedata.write(str(PLAYERSCORE))
-                savedata.close()
-            pygame.quit()
-            quit(0)
+            running = False
 
-    disp_lemon(window)
-    disp_text(window, f"Score: {PLAYERSCORE}")
+    #Fast background lemons
+    for lemon in fast_lemons:
+        window.blit(pygame.transform.scale(lemon_img, (25, 20)), tuple(fast_lemons[lemon]))
+        fast_lemons[lemon][1] += 10
+        if fast_lemons[lemon][1] > 450:
+            fast_lemons[lemon][1] = 0
+    #medium background lemons
+    for lemon in medium_lemons:
+        window.blit(pygame.transform.scale(lemon_img, (25, 20)), tuple(medium_lemons[lemon]))
+        medium_lemons[lemon][1] += 6
+        if medium_lemons[lemon][1] > 450:
+            medium_lemons[lemon][1] = 0
+    #slow background lemons
+    for lemon in slow_lemons:
+        window.blit(pygame.transform.scale(lemon_img, (25, 20)), tuple(slow_lemons[lemon]))
+        slow_lemons[lemon][1] += 3
+        if slow_lemons[lemon][1] > 450:
+            slow_lemons[lemon][1] = 0
+
+        
+    #Anti lemon click script    
+    if not waiting:
+        waiting = disp_lemon(window)
+    if waiting:
+        wait_time += 1
+        disp_fake_lemon(window)
+    if wait_time > 15:
+        wait_time = 0
+        waiting = False
     
+    disp_text(window, f"Score: {PLAYERSCORE}")
+    timer += 1
     pygame.display.update()
-    clock.tick(60)
-    window.fill((255, 255, 255))
+    clock.tick(30)
+    window.fill((255, 255, 0))
+
+
+with open("save_data.lemon", "w") as savedata:
+    savedata.truncate(0)
+    savedata.write(str(PLAYERSCORE))
+    savedata.close()
+pygame.quit()
+quit(0)
