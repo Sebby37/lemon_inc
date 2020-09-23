@@ -4,13 +4,15 @@ import random
 pygame.init()
 pygame.font.init()
 window = pygame.display.set_mode((600, 450)) #Original resolution 450 x 450
-pygame.display.set_caption("Lemon Clicker v0.30a") #Alpha 0.30
+pygame.display.set_caption("Lemon Clicker v0.31a") #Alpha 0.31
 clock = pygame.time.Clock()
 timer = 0
 global_timer = 0
 minute_timer = 60
 wait_time = 0
 waiting = False
+autoclick_clicked = False
+autoclick_timer = 0
 extra_clicks = 0
 
 lemon_img = pygame.image.load("lemon.png").convert_alpha()
@@ -31,12 +33,16 @@ try:
     extra_clicks = int(save_file[1])
 except Exception as e:
     open("save_data.lemon", "w").truncate(0)
-    open("save_data.lemon", "w").write("0")
+    open("save_data.lemon", "w").write("0 0")
 
 def disp_text(window, text):
-    font = pygame.font.SysFont("Comic Sans MS", 30)
+    font = pygame.font.SysFont("Comic Sans MS", 20)
     surface = font.render(text, False, (0, 0, 0))
     window.blit(surface, (0, 0))
+
+def disp_fake_button(window, texture):
+    button = pygame.transform.scale(texture, (100, 100))
+    window.blit(button, (475, 25))
 
 def disp_autoclick(window):
     global PLAYERSCORE
@@ -49,6 +55,8 @@ def disp_autoclick(window):
         if PLAYERSCORE >= 100:
             PLAYERSCORE -= 100
             extra_clicks += 1
+        return True
+    return False
 
 def disp_lemonade(window):
     global PLAYERSCORE
@@ -114,7 +122,7 @@ while running:
             slow_lemons[lemon][1] = 0
 
         
-    #Anti lemon click script    
+    #Anti lemon click script
     if not waiting:
         waiting = disp_lemon(window)
     if waiting:
@@ -129,13 +137,22 @@ while running:
         minute_timer -= 1
     if minute_timer <= 0:
         pass
+
+    #Auto Click Button Script
+    if not autoclick_clicked:
+        autoclick_clicked = disp_autoclick(window)
+    if autoclick_clicked:
+        disp_fake_button(window, AutoClick_img)
+        autoclick_timer += 1
+    if autoclick_timer >= 5:
+        autoclick_clicked = False
+        autoclick_timer = 0
     
     #Auto Click Script
     if global_timer % 30 == 0:
         PLAYERSCORE += extra_clicks
 
-    disp_text(window, f"Score: {PLAYERSCORE} | Timer: {minute_timer} {'| READY' if minute_timer <=0 else ''}")
-    disp_autoclick(window)
+    disp_text(window, f"Score: {PLAYERSCORE} | AutoClicks: {extra_clicks} | Timer: {minute_timer} {'| READY' if minute_timer <=0 else ''}")
     disp_lemonade(window)
     timer += 1
     global_timer += 1
