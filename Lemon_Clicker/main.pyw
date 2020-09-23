@@ -128,7 +128,7 @@ while running:
     if waiting:
         wait_time += 1
         disp_fake_lemon(window)
-    if wait_time > 5:
+    if wait_time >= 5:
         wait_time = 0
         waiting = False
 
