@@ -4,7 +4,7 @@ import random
 pygame.init()
 pygame.font.init()
 window = pygame.display.set_mode((600, 450)) #Original resolution 450 x 450
-pygame.display.set_caption("Lemon Clicker v0.31a") #Alpha 0.31
+pygame.display.set_caption("Lemon Clicker v0.35a") #Alpha 0.35
 clock = pygame.time.Clock()
 timer = 0
 global_timer = 0
@@ -14,10 +14,13 @@ waiting = False
 autoclick_clicked = False
 autoclick_timer = 0
 extra_clicks = 0
+click_power = 1
+click_power_timer = 0
 
 lemon_img = pygame.image.load("lemon.png").convert_alpha()
 AutoClick_img = pygame.image.load("Auto_Clicker_Button.png").convert_alpha()
 Lemonade_img = pygame.image.load("Lemonade_Button.png").convert_alpha()
+Double_img = pygame.image.load("Double_Button.png").convert_alpha()
 
 def ra():
     return random.randint(0, 450)
@@ -35,10 +38,10 @@ except Exception as e:
     open("save_data.lemon", "w").truncate(0)
     open("save_data.lemon", "w").write("0 0")
 
-def disp_text(window, text):
+def disp_text(window, x, y, text):
     font = pygame.font.SysFont("Comic Sans MS", 20)
     surface = font.render(text, False, (0, 0, 0))
-    window.blit(surface, (0, 0))
+    window.blit(surface, (x, y))
 
 def disp_fake_button(window, texture):
     button = pygame.transform.scale(texture, (100, 100))
@@ -62,22 +65,37 @@ def disp_lemonade(window):
     global PLAYERSCORE
     global Lemonade_img
     global minute_timer
+    global click_power
     if minute_timer <= 0:
         window.blit(Lemonade_img, (450, 150))
         mouse_pos = pygame.mouse.get_pos()
         if mouse_pos[0] > 450 and mouse_pos[0] < 600 and mouse_pos[1] > 150 and mouse_pos[1] < 300 and pygame.mouse.get_pressed()[0] == True:
-            PLAYERSCORE += 200
+            PLAYERSCORE += (200 * click_power)
+            minute_timer = 60
+
+def disp_double(window):
+    global Double_img
+    global minute_timer
+    global click_power
+    global click_power_timer
+    if minute_timer <= 0:
+        window.blit(Double_img, (450, 300))
+        mouse_pos = pygame.mouse.get_pos()
+        if mouse_pos[0] > 450 and mouse_pos[0] < 600 and mouse_pos[1] > 300 and mouse_pos[1] < 450 and pygame.mouse.get_pressed()[0] == True:
+            click_power = 2
+            click_power_timer = 20
             minute_timer = 60
 
 def disp_lemon(window):
     global PLAYERSCORE
     global lemon_img
     global timer
+    global click_power
     lemon = lemon_img
     mouse_pos = pygame.mouse.get_pos()
     if mouse_pos[0] > 25 and mouse_pos[0] < 425 and mouse_pos[1] > 75 and mouse_pos[1] < 375 and pygame.mouse.get_pressed()[0] == True:
         print(f"Lemon Clicked!!!! Score = {PLAYERSCORE + 1}")
-        PLAYERSCORE += 1
+        PLAYERSCORE += click_power
         lemon_resized = pygame.transform.scale(lemon, (300, 200))
         window.blit(lemon_resized, (75, 135))
         return True
@@ -100,6 +118,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        #Debug Keys: Up arrow sets the minute timer to 1
+        #if event.type == pygame.KEYDOWN:
+        #    if event.key == pygame.K_UP:
+        #        minute_timer = 1
 
     ''' Falling Lemons Background '''
     #Fast background lemons
@@ -150,10 +172,19 @@ while running:
     
     #Auto Click Script
     if global_timer % 30 == 0:
-        PLAYERSCORE += extra_clicks
+        PLAYERSCORE += (extra_clicks * click_power)
 
-    disp_text(window, f"Score: {PLAYERSCORE} | AutoClicks: {extra_clicks} | Timer: {minute_timer} {'| READY' if minute_timer <=0 else ''}")
+    #Double Click Timer Script
+    if click_power_timer > 0:
+        if global_timer % 30 == 0:
+            click_power_timer -= 1
+    elif click_power_timer <= 0:
+        click_power = 1
+
+    disp_text(window, 0, 0, f"Score: {PLAYERSCORE} | AutoClicks: {extra_clicks} | Timer: {minute_timer} {'| READY' if minute_timer <=0 else ''}")
+    disp_text(window, 0, 22, 'Double Points Time Left: '+str(click_power_timer) if click_power_timer > 0 else '')
     disp_lemonade(window)
+    disp_double(window)
     timer += 1
     global_timer += 1
     pygame.display.update()
