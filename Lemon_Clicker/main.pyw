@@ -4,7 +4,7 @@ import random
 pygame.init()
 pygame.font.init()
 window = pygame.display.set_mode((600, 450)) #Original resolution 450 x 450
-pygame.display.set_caption("Lemon Clicker v0.35a") #Alpha 0.35
+pygame.display.set_caption("Lemon Clicker v0.36a") #Alpha 0.36
 clock = pygame.time.Clock()
 timer = 0
 global_timer = 0
@@ -17,26 +17,26 @@ extra_clicks = 0
 click_power = 1
 click_power_timer = 0
 
-lemon_img = pygame.image.load("lemon.png").convert_alpha()
-AutoClick_img = pygame.image.load("Auto_Clicker_Button.png").convert_alpha()
-Lemonade_img = pygame.image.load("Lemonade_Button.png").convert_alpha()
-Double_img = pygame.image.load("Double_Button.png").convert_alpha()
+lemon_img = pygame.image.load("Assets/lemon.png").convert_alpha()
+AutoClick_img = pygame.image.load("Assets/Auto_Clicker_Button.png").convert_alpha()
+Lemonade_img = pygame.image.load("Assets/Lemonade_Button.png").convert_alpha()
+Double_img = pygame.image.load("Assets/Double_Button.png").convert_alpha()
 
 def ra():
     return random.randint(0, 450)
 
 #Gets player score
-if not os.path.exists("save_data.lemon"):
-    open("save_data.lemon", "w+").write("0 0")
+if not os.path.exists("Assets/save_data.lemon"):
+    open("Assets/save_data.lemon", "w+").write("0 0")
 
 try:
-    save_file = open("save_data.lemon", "r").read()
+    save_file = open("Assets/save_data.lemon", "r").read()
     save_file = save_file.split(" ")
     PLAYERSCORE = int(save_file[0])
     extra_clicks = int(save_file[1])
 except Exception as e:
-    open("save_data.lemon", "w").truncate(0)
-    open("save_data.lemon", "w").write("0 0")
+    open("Assets/save_data.lemon", "w").truncate(0)
+    open("Assets/save_data.lemon", "w").write("0 0")
 
 def disp_text(window, x, y, text):
     font = pygame.font.SysFont("Comic Sans MS", 20)
@@ -192,7 +192,7 @@ while running:
     window.fill((255, 255, 0))
 
 
-with open("save_data.lemon", "w") as savedata:
+with open("Assets/save_data.lemon", "w") as savedata:
     savedata.truncate(0)
     savedata.write(f"{str(PLAYERSCORE)} {str(extra_clicks)}")
     savedata.close()
