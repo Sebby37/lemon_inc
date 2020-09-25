@@ -18,6 +18,7 @@ click_power = 1
 click_power_timer = 0
 
 lemon_img = pygame.image.load("Assets/lemon.png").convert_alpha()
+pygame.display.set_icon(pygame.transform.scale(lemon_img, (32, 32)))
 AutoClick_img = pygame.image.load("Assets/Auto_Clicker_Button.png").convert_alpha()
 Lemonade_img = pygame.image.load("Assets/Lemonade_Button.png").convert_alpha()
 Double_img = pygame.image.load("Assets/Double_Button.png").convert_alpha()
