@@ -129,20 +129,29 @@ while running:
     for lemon in fast_lemons:
         window.blit(pygame.transform.scale(lemon_img, (25, 20)), tuple(fast_lemons[lemon]))
         fast_lemons[lemon][1] += 7
+        fast_lemons[lemon][0] += 3
         if fast_lemons[lemon][1] > 450:
             fast_lemons[lemon][1] = 0
+        if fast_lemons[lemon][0] > 600:
+            fast_lemons[lemon][0] = 0
     #medium background lemons
     for lemon in medium_lemons:
         window.blit(pygame.transform.scale(lemon_img, (25, 20)), tuple(medium_lemons[lemon]))
         medium_lemons[lemon][1] += 5
+        medium_lemons[lemon][0] += 2
         if medium_lemons[lemon][1] > 450:
             medium_lemons[lemon][1] = 0
+        if medium_lemons[lemon][0] > 600:
+            medium_lemons[lemon][0] = 0
     #slow background lemons
     for lemon in slow_lemons:
         window.blit(pygame.transform.scale(lemon_img, (25, 20)), tuple(slow_lemons[lemon]))
         slow_lemons[lemon][1] += 3
+        slow_lemons[lemon][0] += 1
         if slow_lemons[lemon][1] > 450:
             slow_lemons[lemon][1] = 0
+        if slow_lemons[lemon][0] > 600:
+            slow_lemons[lemon][0] = 0
 
         
     #Anti lemon click script
