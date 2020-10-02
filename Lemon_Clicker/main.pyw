@@ -3,8 +3,10 @@ import os
 import random
 pygame.init()
 pygame.font.init()
+pygame.mixer.init()
+pygame.mixer.music.load("Assets/bg-music.mp3")
 window = pygame.display.set_mode((600, 450)) #Original resolution 450 x 450
-pygame.display.set_caption("Lemon Clicker v0.36a") #Alpha 0.36
+pygame.display.set_caption("Lemon Clicker v0.40a") #Alpha 0.40
 clock = pygame.time.Clock()
 timer = 0
 global_timer = 0
@@ -24,7 +26,7 @@ Lemonade_img = pygame.image.load("Assets/Lemonade_Button.png").convert_alpha()
 Double_img = pygame.image.load("Assets/Double_Button.png").convert_alpha()
 
 def ra():
-    return random.randint(0, 450)
+    return random.randint(0, 600)
 
 #Gets player score
 if not os.path.exists("Assets/save_data.lemon"):
@@ -114,22 +116,14 @@ def disp_fake_lemon(window):
 fast_lemons = {"L0":[ra(), 0], "L1":[ra(), 0], "L2":[ra(), 0], "L3":[ra(), 0], "L4":[ra(), 0], "L5":[ra(), 0], "L6":[ra(), 0], "L7":[ra(), 0], "L8":[ra(), 0], "L9":[ra(), 0]}
 medium_lemons = {"L0":[ra(), 0], "L1":[ra(), 0], "L2":[ra(), 0], "L3":[ra(), 0], "L4":[ra(), 0], "L5":[ra(), 0], "L6":[ra(), 0], "L7":[ra(), 0], "L8":[ra(), 0], "L9":[ra(), 0]}
 slow_lemons = {"L0":[ra(), 0], "L1":[ra(), 0], "L2":[ra(), 0], "L3":[ra(), 0], "L4":[ra(), 0], "L5":[ra(), 0], "L6":[ra(), 0], "L7":[ra(), 0], "L8":[ra(), 0], "L9":[ra(), 0]}
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        #Debug Keys: Up arrow sets the minute timer to 1
-        #if event.type == pygame.KEYDOWN:
-        #    if event.key == pygame.K_UP:
-        #        minute_timer = 1
-
-    ''' Falling Lemons Background '''
-    #Fast background lemons
+def bg():
+    global fast_lemons
+    global medium_lemons
+    global slow_lemons
     for lemon in fast_lemons:
         window.blit(pygame.transform.scale(lemon_img, (25, 20)), tuple(fast_lemons[lemon]))
-        fast_lemons[lemon][1] += 7
-        fast_lemons[lemon][0] += 3
+        fast_lemons[lemon][1] += 6
+        fast_lemons[lemon][0] += 1
         if fast_lemons[lemon][1] > 450:
             fast_lemons[lemon][1] = 0
         if fast_lemons[lemon][0] > 600:
@@ -137,8 +131,8 @@ while running:
     #medium background lemons
     for lemon in medium_lemons:
         window.blit(pygame.transform.scale(lemon_img, (25, 20)), tuple(medium_lemons[lemon]))
-        medium_lemons[lemon][1] += 5
-        medium_lemons[lemon][0] += 2
+        medium_lemons[lemon][1] += 4
+        medium_lemons[lemon][0] += 1
         if medium_lemons[lemon][1] > 450:
             medium_lemons[lemon][1] = 0
         if medium_lemons[lemon][0] > 600:
@@ -146,14 +140,33 @@ while running:
     #slow background lemons
     for lemon in slow_lemons:
         window.blit(pygame.transform.scale(lemon_img, (25, 20)), tuple(slow_lemons[lemon]))
-        slow_lemons[lemon][1] += 3
+        slow_lemons[lemon][1] += 2
         slow_lemons[lemon][0] += 1
         if slow_lemons[lemon][1] > 450:
             slow_lemons[lemon][1] = 0
         if slow_lemons[lemon][0] > 600:
             slow_lemons[lemon][0] = 0
 
-        
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        #Debug Keys: Up arrow sets the minute timer to 1, Down arrow resets scores to zero
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                minute_timer = 1
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                PLAYERSCORE = 0
+                extra_clicks = 0
+
+    ''' Falling Lemons Background '''
+    bg()
+
+    if global_timer % 900 == 0:
+        pygame.mixer.music.play()
+    
     #Anti lemon click script
     if not waiting:
         waiting = disp_lemon(window)
